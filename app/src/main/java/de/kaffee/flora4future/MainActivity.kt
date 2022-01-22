@@ -41,7 +41,7 @@ import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationExceptio
  */
 class MainActivity : AppCompatActivity() {
   companion object {
-    private const val TAG = "HelloArActivity"
+    private const val TAG = "Flora for Future"
   }
 
   lateinit var arCoreSessionHelper: ARCoreSessionLifecycleHelper
