@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Flora4Future">
         <activity
-            android:name=".MainActivity"
+            android:name=".OldActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
