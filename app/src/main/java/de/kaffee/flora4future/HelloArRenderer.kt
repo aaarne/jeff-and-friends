@@ -282,13 +282,18 @@ class HelloArRenderer(val activity: MainActivity) :
 
     val camera = frame.camera
     Log.d("TEST1", "!!!!!")
-    val image = frame.acquireCameraImage()
-    val h = image.height
-    val w = image.width
-    //var buffer = image.hardwareBuffer()
-    //buffer.
-    Log.d("TEST1", w.toString() + "x" + h.toString())
-    image.close()
+    fun Frame.tryAcquireCameraImage() =
+      try {
+        acquireCameraImage()
+      } catch (e: NotYetAvailableException) {
+        null
+      }
+
+    frame.tryAcquireCameraImage()?.use { image ->
+      val h = image.height
+      val w = image.width
+      Log.d("TEST1", w.toString() + "x" + h.toString())
+    }
 
     // Update BackgroundRenderer state to match the depth settings.
     try {
