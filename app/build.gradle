@@ -20,8 +20,8 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('Flora4Future')
-            keyAlias 'Flora4Future'
+            storeFile file('Flora4Future.jks')
+            keyAlias 'flora4flora'
             keyPassword 'floraandfauna'
             storePassword 'floraandfauna'
             v1SigningEnabled true

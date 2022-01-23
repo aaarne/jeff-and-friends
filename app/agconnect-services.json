@@ -1,4 +1,10 @@
 {
+	"agcgw":{
+		"backurl":"connect-dre.hispace.hicloud.com",
+		"url":"connect-dre.dbankcloud.cn",
+		"websocketbackurl":"connect-ws-dre.hispace.dbankcloud.com",
+		"websocketurl":"connect-ws-dre.hispace.dbankcloud.cn"
+	},
 	"agcgw_all":{
 		"CN":"connect-drcn.dbankcloud.cn",
 		"CN_back":"connect-drcn.hispace.hicloud.com",
@@ -15,32 +21,53 @@
 		"client_id":"810366652725085120",
 		"client_secret":"D96978688857BFAB9901684AACC9F06386D45EFBEBE24A5C24452F6C082DF2A6",
 		"project_id":"737518067794334622",
-		"app_id":"105408671",
+		"app_id":"105410139",
 		"api_key":"DAEDAAv5KT4rVVFjoJr+D6Zmv2HcMgwUlqvtlpHthfEKrVK7G24oHmmejCni8fRfLDB1nR0K5C3oveJWJyo82830Eh+4/0z76pDPVw==",
-		"package_name":"de.kaffee.flora4fauna"
+		"package_name":"de.kaffee.flora4future"
 	},
 	"oauth_client":{
-		"client_id":"105408671",
+		"client_id":"105410139",
 		"client_type":1
 	},
 	"app_info":{
-		"app_id":"105408671",
-		"package_name":"de.kaffee.flora4fauna"
+		"app_id":"105410139",
+		"package_name":"de.kaffee.flora4future"
 	},
+	"service":{
+		"analytics":{
+			"collector_url":"datacollector-dre.dt.hicloud.com,datacollector-dre.dt.dbankcloud.cn",
+			"collector_url_ru":"datacollector-drru.dt.hicloud.com,datacollector-drru.dt.dbankcloud.cn",
+			"collector_url_sg":"datacollector-dra.dt.hicloud.com,datacollector-dra.dt.dbankcloud.cn",
+			"collector_url_de":"datacollector-dre.dt.hicloud.com,datacollector-dre.dt.dbankcloud.cn",
+			"collector_url_cn":"datacollector-drcn.dt.hicloud.com,datacollector-drcn.dt.dbankcloud.cn",
+			"resource_id":"p1",
+			"channel_id":""
+		},
+		"search":{
+			"url":"https://search-dre.cloud.huawei.com"
+		},
+		"cloudstorage":{
+			"storage_url":"https://ops-dre.agcstorage.link"
+		},
+		"ml":{
+			"mlservice_url":"ml-api-dre.ai.dbankcloud.com,ml-api-dre.ai.dbankcloud.cn"
+		}
+	},
+	"region":"DE",
 	"configuration_version":"3.0",
 	"appInfos":[
 		{
-			"package_name":"de.kaffee.flora4fauna",
+			"package_name":"de.kaffee.flora4future",
 			"client":{
-				"app_id":"105408671"
+				"app_id":"105410139"
 			},
 			"app_info":{
-				"package_name":"de.kaffee.flora4fauna",
-				"app_id":"105408671"
+				"package_name":"de.kaffee.flora4future",
+				"app_id":"105410139"
 			},
 			"oauth_client":{
 				"client_type":1,
-				"client_id":"105408671"
+				"client_id":"105410139"
 			}
 		}
 	]
