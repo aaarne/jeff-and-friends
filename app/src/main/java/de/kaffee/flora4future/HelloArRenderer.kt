@@ -296,18 +296,12 @@ class HelloArRenderer(val activity: MainActivity) :
     frame.tryAcquireCameraImage()?.use { image ->
       val h = image.height
       val w = image.width
-      Log.d("", w.toString() + "x" + h.toString())
-    }
-    Log.d("TEST1", "!!!!!")
-    val image = frame.acquireCameraImage()
-    val h = image.height
-    val w = image.width
-    val planes = image.getPlanes()
-    //var buffer = image.hardwareBuffer()
-    //buffer.
-    Log.d("TEST1", w.toString() + "x" + h.toString())
-    Log.d("TEST1", planes[0].getPixelStride().toString())
-    // https://stackoverflow.com/questions/41775968/how-to-convert-android-media-image-to-bitmap-object
+      val planes = image.getPlanes()
+      //var buffer = image.hardwareBuffer()
+      //buffer.
+      Log.d("TEST1", w.toString() + "x" + h.toString())
+      Log.d("TEST1", planes[0].getPixelStride().toString())
+      // https://stackoverflow.com/questions/41775968/how-to-convert-android-media-image-to-bitmap-object
 //    val buffer = image.planes[0].buffer
 //    val bytes = ByteArray(buffer.capacity())
 //    buffer[bytes]
@@ -318,18 +312,19 @@ class HelloArRenderer(val activity: MainActivity) :
     buffer.get(bytes);
     val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, null)*/
 
-    // https://stackoverflow.com/questions/41775968/how-to-convert-android-media-image-to-bitmap-object
+      // https://stackoverflow.com/questions/41775968/how-to-convert-android-media-image-to-bitmap-object
 //    val yuvToRgbConverter= YuvToRgbConverter(getContext())
 //    val bmp = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
 //    yuvToRgbConverter.yuvToRgb(image, bmp)
 
-    //https://developer.huawei.com/consumer/en/doc/development/hiai-Guides/object-detection-track-0000001050038150
-    val setting = MLObjectAnalyzerSetting.Factory()
-      .setAnalyzerType(MLObjectAnalyzerSetting.TYPE_PICTURE)
-      .allowMultiResults()
-      .allowClassification()
-      .create()
-    val analyzer = MLAnalyzerFactory.getInstance().getLocalObjectAnalyzer(setting)
+      //https://developer.huawei.com/consumer/en/doc/development/hiai-Guides/object-detection-track-0000001050038150
+      val setting = MLObjectAnalyzerSetting.Factory()
+        .setAnalyzerType(MLObjectAnalyzerSetting.TYPE_PICTURE)
+        .allowMultiResults()
+        .allowClassification()
+        .create()
+      val analyzer = MLAnalyzerFactory.getInstance().getLocalObjectAnalyzer(setting)
+    }
 
 //    val ml_frame = MLFrame.fromBitmap(bmp)
 
@@ -351,8 +346,6 @@ class HelloArRenderer(val activity: MainActivity) :
 //    }
 //    val objects = analyzer!!.analyseFrame(ml_frame)
 //    Log.d("TEST1", objects.toString())
-
-    image.close()
 
     // Update BackgroundRenderer state to match the depth settings.
     try {
