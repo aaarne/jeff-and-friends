@@ -281,7 +281,7 @@ class HelloArRenderer(val activity: MainActivity) :
       }
 
     val camera = frame.camera
-    Log.d("TEST1", "!!!!!")
+
     fun Frame.tryAcquireCameraImage() =
       try {
         acquireCameraImage()
