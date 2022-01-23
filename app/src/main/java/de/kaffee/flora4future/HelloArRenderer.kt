@@ -124,6 +124,8 @@ class HelloArRenderer(val activity: MainActivity) :
     private val Z_NEAR = 0.1f
     private val Z_FAR = 100f
 
+    var alreay_spawned = false
+
     // Assumed distance from the device camera to the surface on which user will try to place
     // objects.
     // This value affects the apparent scale of objects while the tracking method of the
@@ -293,7 +295,7 @@ class HelloArRenderer(val activity: MainActivity) :
         Mesh(render, Mesh.PrimitiveMode.POINTS, /*indexBuffer=*/ null, pointCloudVertexBuffers)
 
       // TODO: try different friends of Jeff here
-      showJeffsFriend(render, "jeff")
+      showJeffsFriend(render, "jeff_speech")
 
     } catch (e: IOException) {
       Log.e(TAG, "Failed to read a required asset file", e)
@@ -355,27 +357,30 @@ class HelloArRenderer(val activity: MainActivity) :
       val analyzer = MLAnalyzerFactory.getInstance().getLocalObjectAnalyzer(setting)
       val result = analyzer.analyseFrame(mlFrame)
 
-      result.forEach { i, obj ->
-        Log.d("Object $i", obj.toString())
+//    for (item:MLObject in result){
+//
+//    }
+
+      Log.d("Test1","New")
+      for (i in 0..result.size()-1) {
+        Log.d("Test1","----i")
+        Log.d("Test1",i.toString())
+        Log.d("Test1","----identity")
+        if (result[i] != null)
+        Log.d("Test1",result[i].typeIdentity.toString())
+
+        if (result[i].typeIdentity == 2 && alreay_spawned!= true){
+          alreay_spawned=false
+          showJeffsFriend(render, "jeff_speech")
+
+        }
       }
 
-
-//    val buffer = image.planes[0].buffer
-//    val bytes = ByteArray(buffer.capacity())
-//    buffer[bytes]
-//    val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, null)
-
-/*    val buffer = image.planes[0].buffer
-    val bytes = ByteArray(buffer.capacity())
-    buffer.get(bytes);
-    val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, null)*/
-
-      // https://stackoverflow.com/questions/41775968/how-to-convert-android-media-image-to-bitmap-object
-//    val yuvToRgbConverter= YuvToRgbConverter(getContext())
-//    val bmp = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
-//    yuvToRgbConverter.yuvToRgb(image, bmp)
-
-      //https://developer.huawei.com/consumer/en/doc/development/hiai-Guides/object-detection-track-0000001050038150
+//      Log.d("Object $i", obj.toString())
+//      result[0].typeIdentity
+//      result.forEach { i, obj ->
+//        Log.d("Object $i", obj.toString())
+//      }
     }
 
 //    val ml_frame = MLFrame.fromBitmap(bmp)
@@ -535,7 +540,7 @@ class HelloArRenderer(val activity: MainActivity) :
     )
     lateinit var mesh: Mesh
     mesh = Mesh(render, Mesh.PrimitiveMode.TRIANGLE_STRIP, null, vertexBuffers)
-    render.draw(mesh, textShader)
+    // render.draw(mesh, textShader)
   }
 
   /** Checks if we detected at least one plane. */
