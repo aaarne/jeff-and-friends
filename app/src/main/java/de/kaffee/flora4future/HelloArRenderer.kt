@@ -15,6 +15,7 @@
  */
 package de.kaffee.flora4future
 
+import android.content.Context
 import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
@@ -48,8 +49,18 @@ import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.NotYetAvailableException
 import java.io.IOException
 import java.nio.ByteBuffer
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.huawei.hms.mlsdk.MLAnalyzerFactory
+import com.huawei.hms.mlsdk.common.MLFrame
 import com.huawei.hms.mlsdk.objects.MLObjectAnalyzerSetting
+import java.security.AccessController.getContext
+import android.app.Application
+import android.graphics.ImageDecoder
+import android.graphics.ImageFormat
+import androidx.core.util.forEach
+import com.huawei.hms.ml.common.utils.ImageConvertUtils
 import java.nio.ByteOrder
 
 
@@ -334,21 +345,40 @@ class HelloArRenderer(val activity: MainActivity) :
       }
 
     frame.tryAcquireCameraImage()?.use { image ->
-      val h = image.height
-      val w = image.width
-      val planes = image.getPlanes()
+      val mlFrame = MLFrame.fromMediaImage(image, 0)
+
+      val setting = MLObjectAnalyzerSetting.Factory()
+         .setAnalyzerType(MLObjectAnalyzerSetting.TYPE_PICTURE)
+         .allowMultiResults()
+         .allowClassification()
+         .create()
+      val analyzer = MLAnalyzerFactory.getInstance().getLocalObjectAnalyzer(setting)
+      val result = analyzer.analyseFrame(mlFrame)
+
+      result.forEach { i, obj ->
+        Log.d("Object $i", obj.toString())
+      }
+
+
+//    val buffer = image.planes[0].buffer
+//    val bytes = ByteArray(buffer.capacity())
+//    buffer[bytes]
+//    val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, null)
+
+/*    val buffer = image.planes[0].buffer
+    val bytes = ByteArray(buffer.capacity())
+    buffer.get(bytes);
+    val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, null)*/
+
+      // https://stackoverflow.com/questions/41775968/how-to-convert-android-media-image-to-bitmap-object
+//    val yuvToRgbConverter= YuvToRgbConverter(getContext())
+//    val bmp = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
+//    yuvToRgbConverter.yuvToRgb(image, bmp)
 
       //https://developer.huawei.com/consumer/en/doc/development/hiai-Guides/object-detection-track-0000001050038150
-      val setting = MLObjectAnalyzerSetting.Factory()
-        .setAnalyzerType(MLObjectAnalyzerSetting.TYPE_PICTURE)
-        .allowMultiResults()
-        .allowClassification()
-        .create()
-      val analyzer = MLAnalyzerFactory.getInstance().getLocalObjectAnalyzer(setting)
-
-
-
     }
+
+//    val ml_frame = MLFrame.fromBitmap(bmp)
 
 
     // Update BackgroundRenderer state to match the depth settings.
