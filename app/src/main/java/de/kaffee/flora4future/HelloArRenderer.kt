@@ -143,6 +143,31 @@ class HelloArRenderer(val activity: MainActivity) :
     displayRotationHelper.onPause()
   }
 
+  fun showJeffsFriend(render: SampleRender, name: String) {
+    // Virtual object to render (ARCore pawn)
+    val friendTexture = Texture.createFromAsset(
+      render,
+      "models/$name.jpg.png",
+      Texture.WrapMode.CLAMP_TO_EDGE,
+      Texture.ColorFormat.SRGB
+    )
+    virtualObjectAlbedoTexture = friendTexture
+    virtualObjectAlbedoInstantPlacementTexture = friendTexture
+
+    virtualObjectMesh = Mesh.createFromAsset(render, "models/$name.obj")
+    virtualObjectShader =
+      Shader.createFromAssets(
+        render,
+        "shaders/environmental_hdr.vert",
+        "shaders/environmental_hdr.frag",
+        mapOf("NUMBER_OF_MIPMAP_LEVELS" to cubemapFilter.numberOfMipmapLevels.toString())
+      )
+        .setTexture("u_AlbedoTexture", friendTexture)
+        .setTexture("u_RoughnessMetallicAmbientOcclusionTexture", friendTexture)
+        .setTexture("u_Cubemap", cubemapFilter.filteredCubemapTexture)
+        .setTexture("u_DfgTexture", dfgTexture)
+  }
+
   override fun onSurfaceCreated(render: SampleRender) {
     // Prepare the rendering objects.
     // This involves reading shaders and 3D model files, so may throw an IOException.
@@ -204,42 +229,9 @@ class HelloArRenderer(val activity: MainActivity) :
       pointCloudMesh =
         Mesh(render, Mesh.PrimitiveMode.POINTS, /*indexBuffer=*/ null, pointCloudVertexBuffers)
 
-      // Virtual object to render (ARCore pawn)
-      virtualObjectAlbedoTexture =
-        Texture.createFromAsset(
-          render,
-          "models/jeff.png",
-          Texture.WrapMode.CLAMP_TO_EDGE,
-          Texture.ColorFormat.SRGB
-        )
+      // TODO: try different friends of Jeff here
+      showJeffsFriend(render, "elon")
 
-      virtualObjectAlbedoInstantPlacementTexture =
-        Texture.createFromAsset(
-          render,
-          "models/jeff.png",
-          Texture.WrapMode.CLAMP_TO_EDGE,
-          Texture.ColorFormat.SRGB
-        )
-
-      val virtualObjectPbrTexture =
-        Texture.createFromAsset(
-          render,
-          "models/jeff.png",
-          Texture.WrapMode.CLAMP_TO_EDGE,
-          Texture.ColorFormat.LINEAR
-        )
-      virtualObjectMesh = Mesh.createFromAsset(render, "models/jeff.obj")
-      virtualObjectShader =
-        Shader.createFromAssets(
-            render,
-            "shaders/environmental_hdr.vert",
-            "shaders/environmental_hdr.frag",
-            mapOf("NUMBER_OF_MIPMAP_LEVELS" to cubemapFilter.numberOfMipmapLevels.toString())
-          )
-          .setTexture("u_AlbedoTexture", virtualObjectAlbedoTexture)
-          .setTexture("u_RoughnessMetallicAmbientOcclusionTexture", virtualObjectPbrTexture)
-          .setTexture("u_Cubemap", cubemapFilter.filteredCubemapTexture)
-          .setTexture("u_DfgTexture", dfgTexture)
     } catch (e: IOException) {
       Log.e(TAG, "Failed to read a required asset file", e)
       showError("Failed to read a required asset file: $e")
@@ -292,7 +284,7 @@ class HelloArRenderer(val activity: MainActivity) :
     frame.tryAcquireCameraImage()?.use { image ->
       val h = image.height
       val w = image.width
-      Log.d("TEST1", w.toString() + "x" + h.toString())
+      Log.d("", w.toString() + "x" + h.toString())
     }
 
     // Update BackgroundRenderer state to match the depth settings.
