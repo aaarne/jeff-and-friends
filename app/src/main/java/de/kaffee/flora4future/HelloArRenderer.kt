@@ -57,8 +57,10 @@ import com.huawei.hms.mlsdk.common.MLFrame
 import com.huawei.hms.mlsdk.objects.MLObjectAnalyzerSetting
 import java.security.AccessController.getContext
 import android.app.Application
-
-
+import android.graphics.ImageDecoder
+import android.graphics.ImageFormat
+import androidx.core.util.forEach
+import com.huawei.hms.ml.common.utils.ImageConvertUtils
 
 
 /** Renders the HelloAR application using our example Renderer. */
@@ -294,14 +296,21 @@ class HelloArRenderer(val activity: MainActivity) :
       }
 
     frame.tryAcquireCameraImage()?.use { image ->
-      val h = image.height
-      val w = image.width
-      val planes = image.getPlanes()
-      //var buffer = image.hardwareBuffer()
-      //buffer.
-      Log.d("TEST1", w.toString() + "x" + h.toString())
-      Log.d("TEST1", planes[0].getPixelStride().toString())
-      // https://stackoverflow.com/questions/41775968/how-to-convert-android-media-image-to-bitmap-object
+      val mlFrame = MLFrame.fromMediaImage(image, 0)
+
+      val setting = MLObjectAnalyzerSetting.Factory()
+         .setAnalyzerType(MLObjectAnalyzerSetting.TYPE_PICTURE)
+         .allowMultiResults()
+         .allowClassification()
+         .create()
+      val analyzer = MLAnalyzerFactory.getInstance().getLocalObjectAnalyzer(setting)
+      val result = analyzer.analyseFrame(mlFrame)
+
+      result.forEach { i, obj ->
+        Log.d("Object $i", obj.toString())
+      }
+
+
 //    val buffer = image.planes[0].buffer
 //    val bytes = ByteArray(buffer.capacity())
 //    buffer[bytes]
@@ -318,12 +327,6 @@ class HelloArRenderer(val activity: MainActivity) :
 //    yuvToRgbConverter.yuvToRgb(image, bmp)
 
       //https://developer.huawei.com/consumer/en/doc/development/hiai-Guides/object-detection-track-0000001050038150
-      val setting = MLObjectAnalyzerSetting.Factory()
-        .setAnalyzerType(MLObjectAnalyzerSetting.TYPE_PICTURE)
-        .allowMultiResults()
-        .allowClassification()
-        .create()
-      val analyzer = MLAnalyzerFactory.getInstance().getLocalObjectAnalyzer(setting)
     }
 
 //    val ml_frame = MLFrame.fromBitmap(bmp)
