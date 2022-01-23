@@ -230,7 +230,7 @@ class HelloArRenderer(val activity: MainActivity) :
         Mesh(render, Mesh.PrimitiveMode.POINTS, /*indexBuffer=*/ null, pointCloudVertexBuffers)
 
       // TODO: try different friends of Jeff here
-      showJeffsFriend(render, "elon")
+      showJeffsFriend(render, "jeff")
 
     } catch (e: IOException) {
       Log.e(TAG, "Failed to read a required asset file", e)
@@ -373,12 +373,13 @@ class HelloArRenderer(val activity: MainActivity) :
     }
 
     // Visualize planes.
-    planeRenderer.drawPlanes(
-      render,
-      session.getAllTrackables<Plane>(Plane::class.java),
-      camera.displayOrientedPose,
-      projectionMatrix
-    )
+
+    //planeRenderer.drawPlanes(
+    //  render,
+    //  session.getAllTrackables<Plane>(Plane::class.java),
+    //  camera.displayOrientedPose,
+    //  projectionMatrix
+    //)
 
     // -- Draw occluded virtual objects
 
