@@ -28,6 +28,6 @@ void main() {
   vTexPos = aTexPos;
   vec3 labelNormal = normalize(u_CameraPos - u_LabelOrigin);
   vec3 labelSide = -cross(labelNormal, vec3(0.0, 1.0, 0.0));
-  vec3 modelPosition = u_LabelOrigin + aPosition.x*0.1 * labelSide + aPosition.y * vec3(0.0, 1.0, 0.0)*0.1;
+  vec3 modelPosition = u_LabelOrigin + aPosition.x*0.1 * labelSide + aPosition.y * vec3(0.0, 1.0, 0.0)*1.1;
   gl_Position = u_ViewProjection * vec4(modelPosition, 1.0);
 }
