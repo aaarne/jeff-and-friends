@@ -208,7 +208,7 @@ class HelloArRenderer(val activity: MainActivity) :
       virtualObjectAlbedoTexture =
         Texture.createFromAsset(
           render,
-          "models/pawn_albedo.png",
+          "models/jeff.png",
           Texture.WrapMode.CLAMP_TO_EDGE,
           Texture.ColorFormat.SRGB
         )
@@ -216,7 +216,7 @@ class HelloArRenderer(val activity: MainActivity) :
       virtualObjectAlbedoInstantPlacementTexture =
         Texture.createFromAsset(
           render,
-          "models/pawn_albedo_instant_placement.png",
+          "models/jeff.png",
           Texture.WrapMode.CLAMP_TO_EDGE,
           Texture.ColorFormat.SRGB
         )
@@ -224,11 +224,11 @@ class HelloArRenderer(val activity: MainActivity) :
       val virtualObjectPbrTexture =
         Texture.createFromAsset(
           render,
-          "models/pawn_roughness_metallic_ao.png",
+          "models/jeff.png",
           Texture.WrapMode.CLAMP_TO_EDGE,
           Texture.ColorFormat.LINEAR
         )
-      virtualObjectMesh = Mesh.createFromAsset(render, "models/pawn.obj")
+      virtualObjectMesh = Mesh.createFromAsset(render, "models/jeff.obj")
       virtualObjectShader =
         Shader.createFromAssets(
             render,
@@ -281,6 +281,14 @@ class HelloArRenderer(val activity: MainActivity) :
       }
 
     val camera = frame.camera
+    Log.d("TEST1", "!!!!!")
+    val image = frame.acquireCameraImage()
+    val h = image.height
+    val w = image.width
+    //var buffer = image.hardwareBuffer()
+    //buffer.
+    Log.d("TEST1", w.toString() + "x" + h.toString())
+    image.close()
 
     // Update BackgroundRenderer state to match the depth settings.
     try {
