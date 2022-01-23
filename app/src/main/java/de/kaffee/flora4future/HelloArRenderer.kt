@@ -15,7 +15,6 @@
  */
 package de.kaffee.flora4future
 
-import android.content.Context
 import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
@@ -49,16 +48,9 @@ import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.NotYetAvailableException
 import java.io.IOException
 import java.nio.ByteBuffer
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.huawei.hms.mlsdk.MLAnalyzerFactory
-import com.huawei.hms.mlsdk.common.MLFrame
 import com.huawei.hms.mlsdk.objects.MLObjectAnalyzerSetting
-import java.security.AccessController.getContext
-import android.app.Application
-
-
+import java.nio.ByteOrder
 
 
 /** Renders the HelloAR application using our example Renderer. */
@@ -81,6 +73,42 @@ class HelloArRenderer(val activity: MainActivity) :
         -0.273137f,
         0.136569f
       )
+
+    val COORDS_BUFFER_SIZE = 2 * 4 * 4
+    val NDC_QUAD_COORDS_BUFFER =
+      ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE).order(
+        ByteOrder.nativeOrder()
+      ).asFloatBuffer().apply {
+        put(
+          floatArrayOf(
+            /*0:*/
+            -1.5f, -1.5f,
+            /*1:*/
+            1.5f, -1.5f,
+            /*2:*/
+            -1.5f, 1.5f,
+            /*3:*/
+            1.5f, 1.5f,
+          )
+        )
+      }
+    val SQUARE_TEX_COORDS_BUFFER =
+      ByteBuffer.allocateDirect(COORDS_BUFFER_SIZE).order(
+        ByteOrder.nativeOrder()
+      ).asFloatBuffer().apply {
+        put(
+          floatArrayOf(
+            /*0:*/
+            0f, 0f,
+            /*1:*/
+            1f, 0f,
+            /*2:*/
+            0f, 1f,
+            /*3:*/
+            1f, 1f,
+          )
+        )
+      }
 
     private val Z_NEAR = 0.1f
     private val Z_FAR = 100f
@@ -105,6 +133,9 @@ class HelloArRenderer(val activity: MainActivity) :
   lateinit var backgroundRenderer: BackgroundRenderer
   lateinit var virtualSceneFramebuffer: Framebuffer
   var hasSetTextureNames = false
+  lateinit var textShader: Shader
+
+  val ttcache = TextTextureCache()
 
   // Point Cloud
   lateinit var pointCloudVertexBuffer: VertexBuffer
@@ -178,6 +209,15 @@ class HelloArRenderer(val activity: MainActivity) :
         .setTexture("u_RoughnessMetallicAmbientOcclusionTexture", friendTexture)
         .setTexture("u_Cubemap", cubemapFilter.filteredCubemapTexture)
         .setTexture("u_DfgTexture", dfgTexture)
+
+    textShader = Shader.createFromAssets(render, "shaders/label.vert", "shaders/label.frag", null)
+      .setBlend(
+        Shader.BlendFactor.ONE, // ALPHA (src)
+        Shader.BlendFactor.ONE_MINUS_SRC_ALPHA // ALPHA (dest)
+      )
+      .setDepthTest(false)
+      .setDepthWrite(false)
+
   }
 
   override fun onSurfaceCreated(render: SampleRender) {
@@ -258,7 +298,7 @@ class HelloArRenderer(val activity: MainActivity) :
   override fun onDrawFrame(render: SampleRender) {
     val session = session ?: return
 
-    // Texture names should only be set once on a GL thread unless they change. This is done during
+    // Texture names should only be set once on a GL thread unless they change. This is done d uring
     // onDrawFrame rather than onSurfaceCreated since the session is not guaranteed to have been
     // initialized during the execution of onSurfaceCreated.
     if (!hasSetTextureNames) {
@@ -297,25 +337,6 @@ class HelloArRenderer(val activity: MainActivity) :
       val h = image.height
       val w = image.width
       val planes = image.getPlanes()
-      //var buffer = image.hardwareBuffer()
-      //buffer.
-      Log.d("TEST1", w.toString() + "x" + h.toString())
-      Log.d("TEST1", planes[0].getPixelStride().toString())
-      // https://stackoverflow.com/questions/41775968/how-to-convert-android-media-image-to-bitmap-object
-//    val buffer = image.planes[0].buffer
-//    val bytes = ByteArray(buffer.capacity())
-//    buffer[bytes]
-//    val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, null)
-
-/*    val buffer = image.planes[0].buffer
-    val bytes = ByteArray(buffer.capacity())
-    buffer.get(bytes);
-    val bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, null)*/
-
-      // https://stackoverflow.com/questions/41775968/how-to-convert-android-media-image-to-bitmap-object
-//    val yuvToRgbConverter= YuvToRgbConverter(getContext())
-//    val bmp = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
-//    yuvToRgbConverter.yuvToRgb(image, bmp)
 
       //https://developer.huawei.com/consumer/en/doc/development/hiai-Guides/object-detection-track-0000001050038150
       val setting = MLObjectAnalyzerSetting.Factory()
@@ -324,28 +345,11 @@ class HelloArRenderer(val activity: MainActivity) :
         .allowClassification()
         .create()
       val analyzer = MLAnalyzerFactory.getInstance().getLocalObjectAnalyzer(setting)
+
+
+
     }
 
-//    val ml_frame = MLFrame.fromBitmap(bmp)
-
-//    val ml_frame = MLFrame.fromBitmap(bitmapImage)
-//    // Create a task to process the result returned by the object detector.
-//    val task = analyzer!!.asyncAnalyseFrame(ml_frame)
-//    // Asynchronously process the result returned by the object detector.
-//    task.addOnSuccessListener {
-//      // Detection success.
-//    }.addOnFailureListener {
-//      // Detection failure.
-//    }
-//    if (analyzer != null) {
-//      try {
-//        analyzer!!.stop()
-//      } catch (e: IOException) {
-//        // Exception handling.
-//      }
-//    }
-//    val objects = analyzer!!.analyseFrame(ml_frame)
-//    Log.d("TEST1", objects.toString())
 
     // Update BackgroundRenderer state to match the depth settings.
     try {
@@ -447,6 +451,7 @@ class HelloArRenderer(val activity: MainActivity) :
     updateLightEstimation(frame.lightEstimate, viewMatrix)
 
     // Visualize anchors created by touch.
+    val labelOrigin = FloatArray(3)
     render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f)
     for ((anchor, trackable) in
       wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }) {
@@ -471,10 +476,36 @@ class HelloArRenderer(val activity: MainActivity) :
         }
       virtualObjectShader.setTexture("u_AlbedoTexture", texture)
       render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+
+      val pose = anchor.pose
+      labelOrigin[0] = pose.tx()
+      labelOrigin[1] = pose.ty()
+      labelOrigin[2] = pose.tz()
     }
 
     // Compose the virtual scene with the background.
     backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR)
+
+
+    // Text
+    // val dispText = "Did you know, that until 2050, plastic production will cause 5.2 giga-tons of CO2? Reduce your plastic!"
+    val dispText = "Did you know, that until 2050!"
+    val camPose = camera.getPose()
+
+
+    textShader.setMat4("u_ViewProjection", modelViewProjectionMatrix)
+      .setVec3("u_LabelOrigin", labelOrigin)
+      .setVec3("u_CameraPos", camPose.translation)
+      .setTexture("uTexture", ttcache.get(render, dispText))
+
+
+    val vertexBuffers = arrayOf(
+      VertexBuffer(render, 2, NDC_QUAD_COORDS_BUFFER),
+      VertexBuffer(render, 2, SQUARE_TEX_COORDS_BUFFER),
+    )
+    lateinit var mesh: Mesh
+    mesh = Mesh(render, Mesh.PrimitiveMode.TRIANGLE_STRIP, null, vertexBuffers)
+    render.draw(mesh, textShader)
   }
 
   /** Checks if we detected at least one plane. */
